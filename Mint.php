@@ -42,18 +42,13 @@ class Mint
 	 */
 	private function _getPostPayload()
 	{
-		$fields_string = '';
 		$fields = array(
 			'username' => $this->_email,
 			'password' => $this->_password,
 			'task' => 'L',
 			'nextPage' => 'transactionDownload.event',
 		);
-		foreach ($fields as $k=>$v)
-		{
-			$fields_string .= $k . '=' . $v . '&';
-		}
-		return rtrim($fields_string, '&');
+		return http_build_query($fields);
 	}
 
 	/**
