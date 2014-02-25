@@ -38,15 +38,17 @@ class Mint
 	/**
 	 * Returns a formatted post payload for logging in
 	 *
+	 * @param string $since Limit transactions to return by date
 	 * @return Array Post payload
 	 */
-	private function _getPostPayload()
+	private function _getPostPayload($since = null)
 	{
+		$query = ($since) ? "?startDate=" . date("m/d/Y", strtotime($since)) . "&endDate=" . date("m/d/Y") : '';
 		$fields = array(
 			'username' => $this->_email,
 			'password' => $this->_password,
 			'task' => 'L',
-			'nextPage' => 'transactionDownload.event',
+			'nextPage' => 'transactionDownload.event' . $query,
 		);
 		return http_build_query($fields);
 	}
@@ -54,14 +56,15 @@ class Mint
 	/**
 	 * Authenticate to Mint.com and return transactions
 	 *
+	 * @param string $since Limit transactions to return by date
 	 * @return String CSV of Mint.com transactions
 	 */
-	public function getTransactions()
+	public function getTransactions($since = null)
 	{
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, 'https://wwws.mint.com/loginUserSubmit.xevent');
 		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_getPostPayload());
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_getPostPayload($since));
 		curl_setopt($ch, CURLOPT_COOKIEJAR, $this->_cookie_jar);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
